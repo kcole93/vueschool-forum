@@ -48,7 +48,6 @@
 </template>
 
 <script>
-import sourceData from "@/data.json";
 export default {
   props: {
     threads: {
@@ -56,11 +55,13 @@ export default {
       type: Array,
     },
   },
-  data() {
-    return {
-      posts: sourceData.posts,
-      users: sourceData.users,
-    };
+  computed: {
+    posts (){
+      return this.forumStore.forumData.posts;
+    },
+    users () {
+      return this.forumStore.forumData.users;
+    }, 
   },
   methods: {
     postById(postId) {

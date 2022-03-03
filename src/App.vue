@@ -6,9 +6,15 @@
 </template>
 
 <script>
+import { mapState } from 'pinia';
+import {useForumStore} from '@/stores/forumStore';
+
 export default {
   name: 'App',
   components: {
+  },
+  computed: {
+    ...mapState(useForumStore, ['forumData'])
   }
 }
 </script>

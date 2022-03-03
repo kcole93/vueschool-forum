@@ -8,7 +8,6 @@
 </template>
 
 <script>
-import sourceData from "@/data.json";
 import PostList from '@/components/PostList';
 import PostEditor from '@/components/PostEditor.vue';
 
@@ -23,13 +22,13 @@ export default {
       type: String,
     },
   },
-  data() {
-    return {
-      threads: sourceData.threads,
-      posts: sourceData.posts,
-    };
-  },
   computed: {
+    threads () {
+      return this.forumStore.forumData.threads;
+    },
+    posts () {
+      return this.forumStore.forumData.posts;
+    },
     thread() {
       return this.threads.find((thread) => thread.id === this.id);
     },
@@ -43,9 +42,7 @@ export default {
         ...eventData.post,
         threadId: this.id
       }
-
-      this.posts.push(post);
-      this.thread.posts.push(post.id)
+      this.forumStore.createPost(post);
     }
   }
 };
