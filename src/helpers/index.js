@@ -1,3 +1,4 @@
+// Find a given resource by the provided id
 export const findById = (resources, id) =>
   resources.find(r => r.id === id)
 
