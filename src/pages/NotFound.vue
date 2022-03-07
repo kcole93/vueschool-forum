@@ -15,4 +15,8 @@ export default {};
   font-size: 72px;
   width: 100%;
 }
+
+.col-full {
+  margin-top: 15vh;
+}
 </style>

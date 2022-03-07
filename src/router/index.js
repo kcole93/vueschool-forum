@@ -5,12 +5,29 @@ import ForumShow from '@/pages/ForumShow'
 import CategoryShow from '@/pages/CategoryShow'
 import { createRouter, createWebHistory } from 'vue-router'
 import sourceData from '@/data.json'
+import ProfileShow from '@/pages/ProfileShow'
+import ThreadCreate from '@/pages/ThreadCreate'
+import ThreadEdit from '@/pages/ThreadEdit'
 
 const routes = [
     {
         path: '/',
         name: 'Home',
         component: HomeView
+    },
+    {
+        path: '/me',
+        name: 'ProfileShow',
+        component: ProfileShow,
+        meta: {toTop: true, smoothScroll: true}
+    },
+    {
+        path: '/me/edit',
+        name: 'ProfileEdit',
+        component: ProfileShow,
+        props: {
+            edit: true
+        }
     },
     {
         path: '/thread/:id',
@@ -35,6 +52,18 @@ const routes = [
           }
     },
     {
+        path: '/forum/:forumId/thread/create',
+        name: 'ThreadCreate',
+        component: ThreadCreate,
+        props: true,
+    },
+    {
+        path: '/thread/:id/edit',
+        name: 'ThreadEdit',
+        component: ThreadEdit,
+        props: true
+    },
+    {
         path: '/categories/:id',
         name: 'CategoryShow',
         props: true,
@@ -56,11 +85,10 @@ const routes = [
 export default createRouter({
     history: createWebHistory(),
     routes,
-    scrollBehavior(to, from, savedPosition) {
-        if (savedPosition) {
-            return savedPosition
-        } else {
-            return { top: 0 }
-        }
+    scrollBehavior(to){
+        const scroll = {}
+        if (to.meta.toTop) scroll.top = 0
+        if (to.meta.smoothScroll) scroll.behavior = 'smooth'
+        return scroll
     }
 })

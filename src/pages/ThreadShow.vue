@@ -1,15 +1,23 @@
 <template>
   <div class="col-large push-top">
-    <h1>{{ thread.title }}</h1>
-        
-    <post-list :posts="threadPosts"/>
-    <post-editor @save="addPost"/>
+    <h1>
+      {{ thread.title }}
+      <router-link
+        :to="{ name: 'ThreadEdit', params: {id: this.id} }"
+        class="btn-green btn-small"
+      >
+        Edit Thread
+      </router-link>
+    </h1>
+
+    <post-list :posts="threadPosts" />
+    <post-editor @save="addPost" />
   </div>
 </template>
 
 <script>
-import PostList from '@/components/PostList';
-import PostEditor from '@/components/PostEditor.vue';
+import PostList from "@/components/PostList";
+import PostEditor from "@/components/PostEditor.vue";
 
 export default {
   components: {
@@ -23,28 +31,28 @@ export default {
     },
   },
   computed: {
-    threads () {
+    threads() {
       return this.forumStore.forumData.threads;
     },
-    posts () {
+    posts() {
       return this.forumStore.forumData.posts;
     },
     thread() {
       return this.threads.find((thread) => thread.id === this.id);
     },
     threadPosts() {
-      return this.posts.filter(post => post.threadId === this.id);
+      return this.posts.filter((post) => post.threadId === this.id);
     },
   },
   methods: {
-    addPost (eventData) {
+    addPost(eventData) {
       const post = {
         ...eventData.post,
-        threadId: this.id
-      }
+        threadId: this.id,
+      };
       this.forumStore.createPost(post);
-    }
-  }
+    },
+  },
 };
 </script>
 
