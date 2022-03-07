@@ -10,7 +10,8 @@
 </template>
 
 <script>
-import ThreadEditor from '@/components/ThreadEditor.vue'
+import ThreadEditor from '@/components/ThreadEditor.vue';
+import { findById } from '@/helpers';
 export default {
     components: {
       ThreadEditor,
@@ -20,12 +21,10 @@ export default {
     },
     computed: {
         thread() {
-            return this.forumStore.forumData.threads.find(thread => thread.id === this.id);
+            return findById(this.forumStore.forumData.threads, this.id);
         },
         text() {
-            return this.forumStore.forumData.posts.find(
-                post => post.id === this.thread.posts[0]
-            ).text
+            return findById(this.forumStore.forumData.posts, this.thread.posts[0]).text
         },
     },
     methods: {

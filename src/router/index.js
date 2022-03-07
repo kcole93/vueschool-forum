@@ -4,6 +4,7 @@ import NotFound from '@/pages/NotFound'
 import ForumShow from '@/pages/ForumShow'
 import CategoryShow from '@/pages/CategoryShow'
 import { createRouter, createWebHistory } from 'vue-router'
+import { findById } from '@/helpers'
 import sourceData from '@/data.json'
 import ProfileShow from '@/pages/ProfileShow'
 import ThreadCreate from '@/pages/ThreadCreate'
@@ -36,7 +37,7 @@ const routes = [
         props: true,
         beforeEnter (to, from, next) {
             // check if thread exists
-            const threadExists = sourceData.threads.find(thread => thread.id === to.params.id)
+            const threadExists = findById(sourceData.threads, to.params.id)
             // if exists continue, otherwise redirect to NotFound
             if (threadExists) {
               return next()

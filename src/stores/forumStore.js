@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia';
 import sourceData from '@/data.json';
+import { findById, upsert } from '@/helpers';
 
 export const useForumStore = defineStore("forumStore", {
     state: () => {
@@ -10,7 +11,7 @@ export const useForumStore = defineStore("forumStore", {
     },
     getters: {
         authUser: (state) => {
-            const user = state.forumData.users.find(user => user.id === state.authId);
+            const user = findById(state.forumData.users, state.authId);
             if (!user) return null
             return {
                 ...user,
@@ -34,67 +35,34 @@ export const useForumStore = defineStore("forumStore", {
             post.id = this.createId();
             post.userId = this.authId;
             post.publishedAt = Math.floor(Date.now() / 1000),
-            this.setPost(post); // set the post
-            this.appendPostToThread({postId: post.id, threadId: post.threadId})
-        },
-        setPost(post){
-            // setPost commits the fully-formed post object to the forumData store.
-            // If the post already exists on forumData.posts, then the entry is updated with new values.
-            const index = this.forumData.posts.findIndex(p => p.id === post.id)
-            if (post.id && index !== -1) {
-                this.forumData.posts[index] = post
-            }else {
-                this.forumData.posts.push(post) // Otherwise, a new post object is passed to the forumData.posts array.
-            }
-        },
-        setThread(thread){
-            // setThread commits the fully-formed thread object to the forumData store.
-            // If the thread already exists on forumData.threads, then the entry is updated with new values.
-            const index = this.forumData.threads.findIndex(t => t.id === thread.id)
-            if (thread.id && index !== -1) {
-                this.forumData.threads[index] = thread
-            }else {
-                this.forumData.threads.push(thread) // Otherwise, the new thread object is passed to the forumData.posts array.
-            }
+            upsert(this.forumData.posts, post); // set the post
+            this.appendPostToThread(this.$state, { childId: post.id, parentId: post.threadId })
         },
         createId() {
             return "gggg" + Math.random();
         },
-        appendPostToThread({postId, threadId}){
-            const thread = this.forumData.threads.find(thread => thread.id === threadId);
-            console.log(thread);
-            thread.posts = thread.posts || []
-            thread.posts.push(postId); // append post to thread
-        },
-        appendThreadToForum(forumId, threadId){
-            const forum = this.forumData.forums.find(forum => forum.id === forumId);
-            forum.threads = forum.threads || []
-            forum.threads.push(threadId)
-        },
-        appendThreadToUser(userId, threadId){
-            const user = this.forumData.users.find(user => user.id === userId);
-            user.threads = user.threads || []
-            user.threads.push(threadId)
-        },
+        appendPostToThread: makeAppendChildToParent({ parent: 'threads', child: 'posts' }),
+        appendThreadToForum: makeAppendChildToParent({ parent: 'forums', child: 'threads' }),
+        appendThreadToUser: makeAppendChildToParent({ parent: 'users', child: 'threads' }),
         async createThread({text, title, forumId}) {
             const id = this.createId();
             const publishedAt = Math.floor(Date.now() / 1000);
             const userId = this.authId
             const thread = { forumId, title, publishedAt, userId, id }
-            this.setThread(thread); // set thread
-            this.appendThreadToForum(forumId, id)
-            this.appendThreadToUser(userId, id)
+            upsert(this.forumData.threads, thread) // set thread
+            this.appendThreadToForum(this.$state, { parentId: forumId, childId: id })
+            this.appendThreadToUser(this.$state, { parentId: userId, childId: id })
             const post = {text: text, threadId: id}
             this.createPost(post)
-            return this.forumData.threads.find(thread => thread.id === id);
+            return findById(this.forumData.threads, id);
         },
         async updateThread({ text, title, id }){
-            const thread = this.forumData.threads.find(thread => thread.id === id);
-            const post = this.forumData.posts.find(post => post.id === thread.posts[0])
+            const thread = findById(this.forumData.threads, id);
+            const post = findById(this.forumData.posts, thread.posts[0]);
             const newThread = {...thread, title }
             const newPost = {...post, text }
-            this.setThread(newThread)
-            this.setPost (newPost)
+            upsert(this.forumData.threads, newThread)
+            upsert(this.forumData.posts, newPost)
             return newThread;
         },
         updateUser(user, userId){
@@ -103,3 +71,13 @@ export const useForumStore = defineStore("forumStore", {
         }
     }
 })
+
+
+// Implementation Functions
+function makeAppendChildToParent ({ parent, child }) {
+    return (state, { childId, parentId }) => {
+        const resource = findById(state.forumData[parent], parentId)
+            resource[child] = resource[child] || []
+            resource[child].push(childId)
+    }
+  }

@@ -15,7 +15,8 @@
 </template>
 
 <script>
-import ThreadList from '@/components/ThreadList.vue'
+import ThreadList from '@/components/ThreadList.vue';
+import { findById } from '@/helpers';
 export default {
   components: {
     ThreadList,
@@ -28,7 +29,7 @@ export default {
   },
   computed: {
     forum() {
-      return this.forumStore.forumData.forums.find((forum) => forum.id === this.id);
+      return findById(this.forumStore.forumData.forums, this.id);
     },
     threads() {
       return this.forumStore.forumData.threads.filter((thread) => thread.forumId === this.id);

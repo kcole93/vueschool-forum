@@ -7,7 +7,8 @@
 </template>
 
 <script>
-import ForumList from '@/components/ForumList.vue'
+import ForumList from '@/components/ForumList.vue';
+import { findById } from '@/helpers';
 export default {
   components: {
     ForumList,
@@ -21,7 +22,7 @@ export default {
   
   computed: {
       category() {
-          return this.forumStore.forumData.categories.find(category => category.id === this.id)
+          return findById(this.forumStore.forumData.categories, this.id)
       }
   },
   methods: {
