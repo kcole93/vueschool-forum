@@ -1,4 +1,5 @@
 <template>
+  <the-navbar/>
   <div class="container">
     <router-view/>
   </div>
@@ -8,13 +9,15 @@
 <script>
 import { mapState } from 'pinia';
 import {useForumStore} from '@/stores/forumStore';
+import theNavbar from '@/components/TheNavbar';
 
 export default {
   name: 'App',
   components: {
+    theNavbar,
   },
   computed: {
-    ...mapState(useForumStore, ['forumData'])
+    ...mapState(useForumStore, ['forumData', 'authUser']),
   }
 }
 </script>
@@ -23,8 +26,6 @@ export default {
 #app {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  text-align: center;
   color: #2c3e50;
-  margin-top: 60px;
 }
 </style>
