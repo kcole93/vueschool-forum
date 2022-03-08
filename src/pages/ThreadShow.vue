@@ -9,7 +9,10 @@
         Edit Thread
       </router-link>
     </h1>
-
+    <p>
+      By <a href="#" class="link-unstyled">{{ thread.author.name }}</a>, <app-date :timestamp="thread.publishedAt"/>.
+        <span class="thread-details hide-mobile text-faded text-small">{{ thread.repliesCount }} {{thread.repliesCount === 1 ? `reply`: `replies`}} by {{ thread.contributorsCount }} {{thread.contributorsCount > 1 ? `contributors` : `contributor`}}</span>  
+    </p>
     <post-list :posts="threadPosts" />
     <post-editor @save="addPost" />
   </div>
@@ -18,12 +21,13 @@
 <script>
 import PostList from "@/components/PostList";
 import PostEditor from "@/components/PostEditor.vue";
-import { findById } from '@/helpers';
+import AppDate from "@/components/AppDate.vue";
 
 export default {
   components: {
     PostList,
     PostEditor,
+    AppDate,
   },
   props: {
     id: {
@@ -39,7 +43,7 @@ export default {
       return this.forumStore.forumData.posts;
     },
     thread() {
-      return findById(this.threads, this.id);
+      return this.forumStore.thread(this.id);
     },
     threadPosts() {
       return this.posts.filter((post) => post.threadId === this.id);
@@ -58,4 +62,9 @@ export default {
 </script>
 
 <style scoped>
+
+.thread-details {
+  float:right;
+  margin-top: 2px
+}
 </style>

@@ -19,9 +19,9 @@
 
         <div class="activity">
           <p class="replies-count">
-            {{ thread.posts.length - 1 }}
+            {{ thread.repliesCount }}
             {{
-              thread.posts.length - 1 > 1 || thread.posts.length - 1 === 0
+              thread.repliesCount > 1 || thread.repliesCount === 0
                 ? "replies"
                 : "reply"
             }}
@@ -62,7 +62,7 @@ export default {
     },
     users () {
       return this.forumStore.forumData.users;
-    }, 
+    },
   },
   methods: {
     postById(postId) {

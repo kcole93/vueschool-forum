@@ -2,7 +2,7 @@
   <div class="post-list">
     <div v-for="post in posts" :key="post.id" class="post">
       <div class="user-info">
-        <a href="#" class="user-name">{{ userById(post.userId).username }}</a>
+        <a href="#" class="user-name">{{ userById(post.userId).name }}</a>
 
         <a href="#">
           <img
@@ -12,7 +12,8 @@
           />
         </a>
 
-        <p class="desktop-only text-small">107 posts</p>
+        <p class="desktop-only text-small">{{userById(post.userId).postsCount}} posts</p>
+        <p class="desktop-only text-small">{{userById(post.userId).threadsCount}} threads</p>
       </div>
 
       <div class="post-content">
@@ -28,7 +29,6 @@
 </template>
 
 <script>
-import { findById } from '@/helpers';
 export default {
     props: {
     posts: {
@@ -36,14 +36,9 @@ export default {
       type: Array,
     }
   },
-  computed: {
-    users () {
-      return this.forumStore.forumData.users;
-    },
-  },
   methods: {
     userById(userId) {
-      return findById(this.users, userId);
+      return this.forumStore.user(userId);
     },
   },
 };

@@ -32,7 +32,7 @@ export default {
       return findById(this.forumStore.forumData.forums, this.id);
     },
     threads() {
-      return this.forumStore.forumData.threads.filter((thread) => thread.forumId === this.id);
+      return this.forum.threads.map(threadId => this.forumStore.thread(threadId));
     },
   },
 };

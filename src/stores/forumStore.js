@@ -11,21 +11,47 @@ export const useForumStore = defineStore("forumStore", {
     },
     getters: {
         authUser: (state) => {
-            const user = findById(state.forumData.users, state.authId);
-            if (!user) return null
-            return {
-                ...user,
-                get posts () {
-                    return state.forumData.posts.filter(post => post.userId === user.id);
-                },
-                get postsCount () {
-                    return this.posts.length
-                },
-                get postsSorted () {
-                    return [...this.posts].sort((a, b) => b.publishedAt - a.publishedAt);
-                },        
-                get threads () {
-                    return state.forumData.threads.filter(thread => thread.userId === user.id);
+            return state.user(state.authId);
+        },
+        user: (state) => {
+            return (id) => {
+                const user = findById(state.forumData.users, id);
+                if (!user) return null
+                return {
+                    ...user,
+                    get posts () {
+                        return state.forumData.posts.filter(post => post.userId === user.id);
+                    },
+                    get postsCount () {
+                        return this.posts.length
+                    },
+                    get postsSorted () {
+                        return [...this.posts].sort((a, b) => b.publishedAt - a.publishedAt);
+                    },        
+                    get threads () {
+                        return state.forumData.threads.filter(thread => thread.userId === user.id);
+                    },
+                    get threadsCount () {
+                        return this.threads.length;
+                    },
+                }
+            }         
+        },
+        thread: (state) => {
+            
+            return (id) => {
+                const thread = findById(state.forumData.threads, id)
+                return {
+                    ...thread,
+                    get author () {
+                        return findById(state.forumData.users, thread.userId);
+                    },
+                    get repliesCount () {
+                        return thread.posts.length - 1
+                    },
+                    get contributorsCount () {
+                        return thread.contributors.length
+                    }
                 }
             }
         }
@@ -36,7 +62,8 @@ export const useForumStore = defineStore("forumStore", {
             post.userId = this.authId;
             post.publishedAt = Math.floor(Date.now() / 1000),
             upsert(this.forumData.posts, post); // set the post
-            this.appendPostToThread(this.$state, { childId: post.id, parentId: post.threadId })
+            this.appendPostToThread(this.$state, { parentId: post.threadId, childId: post.id })
+            this.appendContributorToThread(this.$state, { parentId: post.threadId, childId: this.$state.authId })
         },
         createId() {
             return "gggg" + Math.random();
@@ -44,6 +71,7 @@ export const useForumStore = defineStore("forumStore", {
         appendPostToThread: makeAppendChildToParent({ parent: 'threads', child: 'posts' }),
         appendThreadToForum: makeAppendChildToParent({ parent: 'forums', child: 'threads' }),
         appendThreadToUser: makeAppendChildToParent({ parent: 'users', child: 'threads' }),
+        appendContributorToThread: makeAppendChildToParent({ parent: 'threads', child: 'contributors' }),
         async createThread({text, title, forumId}) {
             const id = this.createId();
             const publishedAt = Math.floor(Date.now() / 1000);
@@ -78,6 +106,8 @@ function makeAppendChildToParent ({ parent, child }) {
     return (state, { childId, parentId }) => {
         const resource = findById(state.forumData[parent], parentId)
             resource[child] = resource[child] || []
-            resource[child].push(childId)
+            if(!resource[child].includes(childId)){
+                resource[child].push(childId)
+            }
     }
   }
