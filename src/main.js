@@ -3,6 +3,11 @@ import App from './App.vue'
 import router from '@/router'
 import { createPinia } from 'pinia'
 import { useForumStore } from '@/stores/forumStore'
+import firebase from 'firebase'
+import firebaseConfig from '@/config/firebase'
+
+// Initialize Firebase
+firebase.initializeApp(firebaseConfig)
 
 const pinia = createPinia()
 const forumApp = createApp(App)
