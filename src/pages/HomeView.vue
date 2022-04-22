@@ -11,11 +11,21 @@ export default {
   components: {
     CategoryList,
   },
+  data(){
+    return {
+      ready: false
+    }
+  },
   computed: {
     categories () {
       return this.forumStore.forumData.categories
     },
   },
+  async beforeCreate() {
+    const categories = await this.forumStore.fetchAllCategories();
+    const forumIds = categories.map(category => category.forums).flat()
+    this.forumStore.fetchForums({ids: forumIds});
+  }
 };
 </script>
 

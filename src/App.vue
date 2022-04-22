@@ -18,7 +18,10 @@ export default {
   },
   computed: {
     ...mapState(useForumStore, ['forumData', 'authUser']),
-  }
+  },
+  created () {
+    this.forumStore.fetchAuthUser();
+  },
 }
 </script>
 

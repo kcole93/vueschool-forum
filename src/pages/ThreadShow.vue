@@ -3,15 +3,23 @@
     <h1>
       {{ thread.title }}
       <router-link
-        :to="{ name: 'ThreadEdit', params: {id: this.id} }"
+        :to="{ name: 'ThreadEdit', params: { id: this.id } }"
         class="btn-green btn-small"
       >
         Edit Thread
       </router-link>
     </h1>
     <p>
-      By <a href="#" class="link-unstyled">{{ thread.author.name }}</a>, <app-date :timestamp="thread.publishedAt"/>.
-        <span class="thread-details hide-mobile text-faded text-small">{{ thread.repliesCount }} {{thread.repliesCount === 1 ? `reply`: `replies`}} by {{ thread.contributorsCount }} {{thread.contributorsCount > 1 ? `contributors` : `contributor`}}</span>  
+      By <a href="#" class="link-unstyled">{{ thread.author?.name }}</a
+      >, <app-date :timestamp="thread.publishedAt" />.
+      <span class="thread-details hide-mobile text-faded text-small"
+        >{{ thread.repliesCount }}
+        {{ thread.repliesCount === 1 ? `reply` : `replies` }} by
+        {{ thread.contributorsCount }}
+        {{
+          thread.contributorsCount > 1 ? `contributors` : `contributor`
+        }}</span
+      >
     </p>
     <post-list :posts="threadPosts" />
     <post-editor @save="addPost" />
@@ -58,13 +66,18 @@ export default {
       this.forumStore.createPost(post);
     },
   },
-};
+  async created() {
+    const thread = await this.forumStore.fetchThread(this.id)
+    const posts = await this.forumStore.fetchPosts({ ids: thread.posts })
+    const users = posts.map(post => post.userId).concat(thread.userId)
+    this.forumStore.fetchUsers({ ids: users })
+  }
+}
 </script>
 
 <style scoped>
-
 .thread-details {
-  float:right;
-  margin-top: 2px
+  float: right;
+  margin-top: 2px;
 }
 </style>

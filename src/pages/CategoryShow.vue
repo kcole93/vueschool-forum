@@ -22,14 +22,20 @@ export default {
   
   computed: {
       category() {
-          return findById(this.forumStore.forumData.categories, this.id)
+          return findById(this.forumStore.forumData.categories, this.id) || {}
       }
   },
   methods: {
       getCategoryForums(category) {
           return this.forumStore.forumData.forums.filter(forum => forum.categoryId === category.id)
       }
-  }
+  },
+  async created () {
+    const category = await this.forumStore.fetchCategory(this.id)
+    const forums = this.forumStore.fetchForums({ ids: category.forums })
+
+
+  },
 };
 </script>
 

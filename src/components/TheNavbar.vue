@@ -16,7 +16,7 @@
     <nav class="navbar">
         <ul>
 
-            <li class="navbar-user">
+            <li v-if="this.forumStore.authUser" class="navbar-user">
                 <router-link :to="{ name: 'ProfileShow'}">
                     <img class="avatar-small" :src="this.forumStore.authUser.avatar" :alt="`${this.forumStore.authUser.name}'s profile picture`">
                     <span>
@@ -64,7 +64,6 @@
 
 <script>
 export default {
-
 }
 </script>
 

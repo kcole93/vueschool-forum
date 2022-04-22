@@ -1,7 +1,8 @@
 // Find a given resource by the provided id
-export const findById = (resources, id) =>
-  resources.find(r => r.id === id)
-
+export const findById = (resources, id) => {
+  if(!resources) return null  
+  return resources.find(r => r.id === id)
+}
 
 // upsert commits the fully-formed resource object to the store.
 // If the resource already exists within the resources array, then the entry is updated with new values.
@@ -12,4 +13,9 @@ export const upsert = (resources, resource) => {
             }else {
                 resources.push(resource) // Otherwise, a new post object is passed to the resource array.
             }
+}
+
+export const docToResource = (doc) => {
+  if (typeof doc?.data !== 'function') return doc
+  return {...doc.data(), id: doc.id }
 }

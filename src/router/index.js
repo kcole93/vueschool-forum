@@ -4,11 +4,14 @@ import NotFound from '@/pages/NotFound'
 import ForumShow from '@/pages/ForumShow'
 import CategoryShow from '@/pages/CategoryShow'
 import { createRouter, createWebHistory } from 'vue-router'
-import { findById } from '@/helpers'
-import sourceData from '@/data.json'
+/* import { findById } from '@/helpers'
+import sourceData from '@/data.json' */
 import ProfileShow from '@/pages/ProfileShow'
 import ThreadCreate from '@/pages/ThreadCreate'
 import ThreadEdit from '@/pages/ThreadEdit'
+import { useForumStore } from '@/stores/forumStore'
+
+
 
 const routes = [
     {
@@ -35,7 +38,7 @@ const routes = [
         name: 'ThreadShow',
         component: ThreadShow,
         props: true,
-        beforeEnter (to, from, next) {
+        /* beforeEnter (to, from, next) {
             // check if thread exists
             const threadExists = findById(sourceData.threads, to.params.id)
             // if exists continue, otherwise redirect to NotFound
@@ -50,7 +53,7 @@ const routes = [
                 hash: to.hash
               })
             }
-          }
+          } */
     },
     {
         path: '/forum/:forumId/thread/create',
@@ -83,7 +86,7 @@ const routes = [
     }
 ]
 
-export default createRouter({
+const router = createRouter({
     history: createWebHistory(),
     routes,
     scrollBehavior(to){
@@ -93,3 +96,10 @@ export default createRouter({
         return scroll
     }
 })
+
+router.beforeEach( () => {
+    const forumStore = useForumStore();
+    forumStore.unsubscribeAllSnapshots();
+})
+
+export default router

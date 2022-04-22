@@ -1,12 +1,13 @@
 <template>
   <div class="col-full">
-    <div class="thread-list">
+    <div v-if="threads" class="thread-list">
       <h2 class="list-title">Threads</h2>
 
       <div v-for="thread in threads" :key="thread.id" class="thread">
         <div>
           <p>
             <router-link
+              v-if="thread.id"
               :to="{ name: 'ThreadShow', params: { id: thread.id } }"
               >{{ thread.title }}</router-link
             >
@@ -69,7 +70,7 @@ export default {
       return findById(this.posts, postId);
     },
     userById(userId) {
-      return findById(this.users, userId);
+      return findById(this.users, userId) || {};
     },
   },
 };
