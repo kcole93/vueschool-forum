@@ -1,7 +1,8 @@
 <template>
   <the-navbar/>
   <div class="container">
-    <router-view/>
+    <router-view v-show="showPage" @ready="showPage = true"/>
+    <AppSpinner v-if="!showPage"/>
   </div>
   
 </template>
@@ -16,11 +17,21 @@ export default {
   components: {
     theNavbar,
   },
+  data () {
+    return {
+      showPage: false
+    }
+  },
   computed: {
     ...mapState(useForumStore, ['forumData', 'authUser']),
   },
-  created () {
+  async created () {
     this.forumStore.fetchAuthUser();
+    
+    // Reset showPage to false before each router navigation
+    this.$router.beforeEach(() => {
+      this.showPage = false;
+    })
   },
 }
 </script>

@@ -12,7 +12,7 @@ export const useForumStore = defineStore("forumStore", {
                 posts: [],
                 users: [],
             },
-            authId: 'ALXhxjwgY9PinwNGHpfai6OWyDu2',
+            authId: null,
             unsubscribes: []
         }
     },
@@ -120,7 +120,10 @@ export const useForumStore = defineStore("forumStore", {
             return this.fetchItem({ resource: 'users', id, emoji: '👱 User ' })
         },
         fetchAuthUser () {
-            return this.fetchItem({ resource: 'users', id: this.authId, emoji: '🔑👱 AuthUser '})
+            const userId = firebase.auth().currentUser?.uid
+            if(!userId) return
+            this.fetchItem({ resource: 'users', id: userId, emoji: '🔑👱 AuthUser '})
+            this.setAuthId(userId);
         },
         appendUnsubscribe(unsubscribe){
             this.unsubscribes.push(unsubscribe)
@@ -201,6 +204,9 @@ export const useForumStore = defineStore("forumStore", {
         setItem({resource, item}) {
             upsert(this.forumData[resource], docToResource(item))
         },
+        setAuthId(id){
+            this.$state.authId = id;
+        },
         async updateThread({ text, title, id }) {
             const thread = findById(this.forumData.threads, id);
             const post = findById(this.forumData.posts, thread.posts[0]);
@@ -254,7 +260,25 @@ export const useForumStore = defineStore("forumStore", {
             this.appendUnsubscribe(unsubscribe)
         })
         },
-    },
+        async registerUserWithEmailAndPassword ( { avatar = null, email, name, username, password }) {
+            const result = await firebase.auth().createUserWithEmailAndPassword(email, password)
+            await this.createUser( { id: result.user.uid, email, name, username, avatar } )
+        },
+        async createUser( { id, email, name, username, avatar = null } ) {
+            const registeredAt = firebase.firestore.FieldValue.serverTimestamp()
+            const usernameLower = username.toLowerCase()
+            email = email.toLowerCase()
+    
+            const user = {avatar, email, name, username, usernameLower, registeredAt }
+    
+            const userRef = await firebase.firestore().collection('users').doc(id)
+            userRef.set(user)
+    
+            const newUser = await userRef.get()
+            this.setItem({resource: 'users', item: newUser })
+            return docToResource(newUser)
+        }
+    }
 })
 
 

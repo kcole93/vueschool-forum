@@ -1,5 +1,7 @@
 <template>
-  <div class="col-large push-top">
+  <div 
+    v-if="asyncDataStatus_ready"
+    class="col-large push-top">
     <h1>
       {{ thread.title }}
       <router-link
@@ -30,6 +32,7 @@
 import PostList from "@/components/PostList";
 import PostEditor from "@/components/PostEditor.vue";
 import AppDate from "@/components/AppDate.vue";
+import asyncDataStatus from '@/mixins/asyncDataStatus'; 
 
 export default {
   components: {
@@ -37,6 +40,7 @@ export default {
     PostEditor,
     AppDate,
   },
+  mixins: [asyncDataStatus],
   props: {
     id: {
       required: true,
@@ -70,7 +74,8 @@ export default {
     const thread = await this.forumStore.fetchThread(this.id)
     const posts = await this.forumStore.fetchPosts({ ids: thread.posts })
     const users = posts.map(post => post.userId).concat(thread.userId)
-    this.forumStore.fetchUsers({ ids: users })
+    await this.forumStore.fetchUsers({ ids: users })
+    this.asyncDataStatus_fetched();
   }
 }
 </script>

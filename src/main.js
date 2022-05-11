@@ -8,6 +8,7 @@ import firebaseConfig from '@/config/firebase'
 import FontAwesome from '@/plugins/FontAwesome'
 
 
+
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig)
 
@@ -31,3 +32,12 @@ forumApp.config.globalProperties.forumStore = useForumStore();
 forumApp.use(router)
 forumApp.use(FontAwesome)
 forumApp.mount('#app')
+
+
+// Use the On Auth State Changed Observer
+firebase.auth().onAuthStateChanged( user => {
+  const forumStore = useForumStore(pinia);
+  if(user){
+    forumStore.fetchAuthUser();
+  }
+})

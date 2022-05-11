@@ -9,6 +9,7 @@ import sourceData from '@/data.json' */
 import ProfileShow from '@/pages/ProfileShow'
 import ThreadCreate from '@/pages/ThreadCreate'
 import ThreadEdit from '@/pages/ThreadEdit'
+import RegistrationShow from '@/pages/RegistrationShow'
 import { useForumStore } from '@/stores/forumStore'
 
 
@@ -78,6 +79,11 @@ const routes = [
         name: 'ForumShow',
         component: ForumShow,
         props: true,
+    },
+    {
+        path: '/register',
+        name: 'Register',
+        component: RegistrationShow
     },
     {
         path: '/:pathMatch(.*)*',

@@ -51,6 +51,9 @@ export default {
         userThreadsCount () {
             return this.userThreads.length;
         }
+  },
+  created () {
+    this.$emit('ready');
   }
 };
 </script>
