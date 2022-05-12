@@ -9,7 +9,7 @@
 
 <script>
 import { mapState } from 'pinia';
-import {useForumStore} from '@/stores/forumStore';
+import useForumStore from '@/stores/forumStore';
 import theNavbar from '@/components/TheNavbar';
 
 export default {
@@ -23,16 +23,17 @@ export default {
     }
   },
   computed: {
-    ...mapState(useForumStore, ['forumData', 'authUser']),
+    ...mapState(useForumStore, ['forumData']),
   },
-  async created () {
-    this.forumStore.fetchAuthUser();
+  created () {    
+    
+    this.forumStore.fetchAuthUser();    
     
     // Reset showPage to false before each router navigation
     this.$router.beforeEach(() => {
       this.showPage = false;
     })
-  },
+  }
 }
 </script>
 
