@@ -10,6 +10,7 @@ import ProfileShow from '@/pages/ProfileShow'
 import ThreadCreate from '@/pages/ThreadCreate'
 import ThreadEdit from '@/pages/ThreadEdit'
 import RegistrationShow from '@/pages/RegistrationShow'
+import SignInShow from '@/pages/SignInShow'
 import { useForumStore } from '@/stores/forumStore'
 
 
@@ -84,6 +85,11 @@ const routes = [
         path: '/register',
         name: 'Register',
         component: RegistrationShow
+    },
+    {
+        path: '/signin',
+        name: 'SignIn',
+        component: SignInShow
     },
     {
         path: '/:pathMatch(.*)*',
