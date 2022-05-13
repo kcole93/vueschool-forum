@@ -264,6 +264,13 @@ export const useForumStore = defineStore("forumStore", {
             const result = await firebase.auth().createUserWithEmailAndPassword(email, password)
             await this.createUser( { id: result.user.uid, email, name, username, avatar } )
         },
+        async signInWithEmailAndPassword( {email, password} ){
+            return firebase.auth().signInWithEmailAndPassword(email, password);
+        },
+        async signOut(){
+            await firebase.auth().signOut();
+            this.setAuthId(null);
+        },
         async createUser( { id, email, name, username, avatar = null } ) {
             const registeredAt = firebase.firestore.FieldValue.serverTimestamp()
             const usernameLower = username.toLowerCase()

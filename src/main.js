@@ -34,10 +34,11 @@ forumApp.use(FontAwesome)
 forumApp.mount('#app')
 
 
-// Use the On Auth State Changed Observer
-firebase.auth().onAuthStateChanged( user => {
-  const forumStore = useForumStore(pinia);
-  if(user){
-    forumStore.fetchAuthUser();
-  }
-})
+    // Use the On Auth State Changed Observer
+    firebase.auth().onAuthStateChanged( user => {
+      const forumStore = useForumStore(pinia);
+      
+      if(user){
+        forumStore.fetchAuthUser();
+      }
+    })
