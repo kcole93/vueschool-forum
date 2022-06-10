@@ -97,12 +97,15 @@ export default {
   },
   methods: {
     save () {
-      this.forumStore.updateUser({...this.activeUser}, this.user.id);
+      this.forumStore.updateUser({...this.activeUser});
       this.$router.push({name: 'ProfileShow'});
     },
     cancel() {
       this.$router.push({name: 'ProfileShow'})
     }
+  },
+  onMounted() {
+    this.$emit('ready')
   }
 }
 </script>

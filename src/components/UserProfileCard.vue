@@ -1,9 +1,9 @@
 <template>
-  <div class="profile-card">
+  <div v-if="user" class="profile-card">
     <p class="text-center">
       <img
         :src="user.avatar"
-        alt="`${user.name}'s profile picture`"
+        :alt="`${user.name}'s profile picture`"
         class="avatar-xlarge"
       />
     </p>
@@ -44,16 +44,11 @@ export default {
   props: {
     user: { required: true, type: Object },
   },
-  computed: {
-      userPostsCount () {
-            return this.userPosts.length;
-        },
-        userThreadsCount () {
-            return this.userThreads.length;
-        }
-  },
   created () {
     this.$emit('ready');
+  },
+  onUpdated(){
+    this.showPage = false
   }
 };
 </script>

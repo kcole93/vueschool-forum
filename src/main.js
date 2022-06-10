@@ -38,6 +38,8 @@ forumApp.mount('#app')
     firebase.auth().onAuthStateChanged( user => {
       const forumStore = useForumStore(pinia);
       
+      forumStore.unsubscribeAuthUserSnapshot();
+      
       if(user){
         forumStore.fetchAuthUser();
       }
