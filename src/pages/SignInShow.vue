@@ -57,7 +57,7 @@ export default {
     async signIn() {
       try {
         await this.forumStore.signInWithEmailAndPassword({...this.form});
-        this.$router.push("/");
+        this.successRedirect();
       } catch (error) {
         alert(error.message);
       }
@@ -65,8 +65,12 @@ export default {
 
     async signInWithGoogle(){
       await this.forumStore.signInWithGoogle();
-      this.$router.push('/')
-    }
+      this.successRedirect();
+    },
+    successRedirect(){
+      const redirectTo = this.$route.query.redirectTo || { name: 'Home'}
+      this.$router.push(redirectTo);
+    },
   },
   created() {
     this.$emit("ready");

@@ -1,3 +1,4 @@
+// TODO: Split forumStore into nested stores: https://pinia.vuejs.org/cookbook/migration-vuex.html#restructuring-modules-to-stores
 import { defineStore } from 'pinia';
 import { findById, upsert, docToResource } from '@/helpers';
 import firebase from 'firebase';
@@ -14,7 +15,8 @@ export const useForumStore = defineStore("forumStore", {
             },
             authId: null,
             unsubscribes: [],
-            authUserUnsubscribe: null
+            authUserUnsubscribe: null,
+            authObserverUnsubscribe: null,
         }
     },
     getters: {
@@ -66,6 +68,26 @@ export const useForumStore = defineStore("forumStore", {
         }
     },
     actions: {
+        initAuthentication(){
+            // Use the On Auth State Changed Observer
+            if (this.authObserverUnsubscribe) this.authObserverUnsubscribe();
+            return new Promise((resolve) => {
+                const unsubscribe = firebase.auth().onAuthStateChanged(async (user) => {
+                    console.log('👣 The user has changed.')
+                    this.unsubscribeAuthUserSnapshot();
+    
+                    if (user) {
+                        await this.fetchAuthUser();
+                        resolve(user)
+                    } else {
+                        resolve(null)
+                    }
+                })
+
+                this.setAuthObserverUnsubscribe(unsubscribe);
+            })
+            
+        },        
         // Fetch Multiple Resources
         fetchItems({ ids, resource, emoji }) {
             return Promise.all(ids.map(id =>
@@ -97,9 +119,13 @@ export const useForumStore = defineStore("forumStore", {
                     .collection(resource)
                     .doc(id)
                     .onSnapshot((doc) => {
-                        const item = { ...doc.data(), id: doc.id };
-                        this.setItem({ resource: resource, item: item });
-                        resolve(item)
+                        if (doc.exists) {
+                            const item = { ...doc.data(), id: doc.id };
+                            this.setItem({ resource: resource, item: item });
+                            resolve(item)
+                        }else {
+                            resolve(null)
+                        }
                     })
                     if(handleUnsubscribe){
                     handleUnsubscribe(unsubscribe)
@@ -123,13 +149,19 @@ export const useForumStore = defineStore("forumStore", {
         fetchUser(id) {
             return this.fetchItem({ resource: 'users', id, emoji: '👱 User ' })
         },
-        fetchAuthUser() {
+        async fetchAuthUser() {
             const userId = firebase.auth().currentUser?.uid
             if (!userId) return
-            this.fetchItem({ resource: 'users', id: userId, emoji: '🔑👱 AuthUser ', handleUnsubscribe: (unsubscribe) => {
+            await this.fetchItem({ resource: 'users', id: userId, emoji: '🔑👱 AuthUser ', handleUnsubscribe: (unsubscribe) => {
                 this.setAuthUserUnsubscribe(unsubscribe);
             } })
             this.setAuthId(userId);
+        },
+        async fetchAuthUsersPosts(){
+        const posts = await firebase.firestore().collection('posts').where('userId', '==', this.authId).get();
+        posts.forEach(item => {
+            this.setItem({ resource: 'posts', item });
+        })
         },
         appendUnsubscribe(unsubscribe) {
             this.unsubscribes.push(unsubscribe)
@@ -146,6 +178,9 @@ export const useForumStore = defineStore("forumStore", {
                 this.$state.authUserUnsubscribe()
                 this.setAuthUserUnsubscribe(null)
             }
+        },
+        setAuthObserverUnsubscribe(unsubscribe){
+            this.authObserverUnsubscribe = unsubscribe
         },
         // Create Resources
         async createPost(post) {
@@ -245,11 +280,17 @@ export const useForumStore = defineStore("forumStore", {
         },
         async updateUser(user) {
 
+            const updates = {
+                avatar: user.avatar || null,
+                username: user.username || null,
+                name: user.name || null,
+                bio: user.bio || null,
+                website: user.website || null,
+                email: user.email || null,
+                location: user.location || null
+            }
             const userRef = firebase.firestore().collection('users').doc(user.id)
-            await userRef.update(user)
-            const updatedUser = await userRef.get()
-            this.setItem({ resource: 'users', item: updatedUser })
-            return docToResource(updatedUser)
+            await userRef.update(updates)
         },
         async updatePost(text, id) {
             const post = {

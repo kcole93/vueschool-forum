@@ -1,5 +1,5 @@
 <template>
-  <div class="container">
+  <div class="container" style="width: 100vw">
     <div class="flex-grid">
       <div class="col-3 push-top">
         <UserProfileCard v-if="!edit" :user="user"/>
@@ -21,9 +21,11 @@
 import PostList from '@/components/PostList';
 import UserProfileCard from '@/components/UserProfileCard.vue'
 import UserProfileCardEditor from '@/components/UserProfileCardEditor.vue'
+import asyncDataStatus from '@/mixins/asyncDataStatus';
 
 export default {
-    components: { PostList, UserProfileCard, UserProfileCardEditor },
+    components: { PostList, UserProfileCard, UserProfileCardEditor, },
+    mixins: [asyncDataStatus],
     props: {
         edit: {
             type: Boolean,
@@ -35,8 +37,9 @@ export default {
             return this.forumStore.authUser;
         },        
     },
-    created () {
-      this.$emit('ready');
+    async created () {
+      await this.forumStore.fetchAuthUsersPosts();
+      this.asyncDataStatus_fetched();
     }
 };
 </script>
