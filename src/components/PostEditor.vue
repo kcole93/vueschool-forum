@@ -30,11 +30,24 @@ export default {
   },
   methods: {
     save() {
+      this.$emit('clean')
       this.$emit("save", { post: this.postCopy });
 
       this.postCopy.text = "";
     },
   },
+  watch: {
+    post: {
+      handler(){
+        if(this.post !== this.postCopy) {
+          this.$emit("dirty")
+        }else {
+          this.$emit("clean")
+        }
+      },
+      deep: true
+    }
+}
 };
 </script>
 

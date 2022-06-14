@@ -6,6 +6,7 @@
       {{ thread.title }}
       <router-link
         :to="{ name: 'ThreadEdit', params: { id: this.id } }"
+        v-if="thread.userId === authUser?.id"
         class="btn-green btn-small"
       >
         Edit Thread
@@ -24,7 +25,10 @@
       >
     </p>
     <post-list :posts="threadPosts" />
-    <post-editor @save="addPost" />
+    <post-editor v-if="authUser" @save="addPost" />
+    <div v-else class="sign-in-prompt text-center">
+      <router-link :to="{name: 'SignIn', query: {redirectTo: $route.path}}">Sign In</router-link> or <router-link :to="{ name: 'Register', query: {redirectTo: $route.path}}">Register</router-link>  to reply.
+    </div>
   </div>
 </template>
 
@@ -48,6 +52,9 @@ export default {
     },
   },
   computed: {
+    authUser(){
+      return this.forumStore.authUser;
+    },
     threads() {
       return this.forumStore.forumData.threads;
     },
@@ -84,5 +91,9 @@ export default {
 .thread-details {
   float: right;
   margin-top: 2px;
+}
+
+.sign-in-prompt {
+  margin-bottom: 50px;
 }
 </style>

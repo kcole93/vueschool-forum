@@ -26,6 +26,8 @@
             v-if="editing === post.id"
             :post="post"
             @save="handleUpdate"
+            @dirty="postIsDirty = true"
+            @clean="postIsDirty = false"
           
           />
           <p v-else>{{ post.text }}</p>
@@ -64,7 +66,8 @@ export default {
   },
   data () {
     return {
-      editing: null
+      editing: null,
+      postIsDirty: false
       }
   },
   methods: {
@@ -82,7 +85,14 @@ export default {
   },
   created () {
     this.$emit('ready')
-  }
+  },
+  beforeRouteLeave(){
+    if(this.postIsDirty){
+    const confirmed = window.confirm('Are you sure you want to leave this page? Unsaved changes will be lost!')
+
+    if(!confirmed) return false
+  }   
+  },
 };
 </script>
 
