@@ -6,6 +6,8 @@ import { useForumStore } from '@/stores/forumStore'
 import firebase from 'firebase'
 import firebaseConfig from '@/config/firebase'
 import FontAwesome from '@/plugins/FontAwesome'
+import ClickOutsideDirective from '@/plugins/ClickOutsideDirective'
+import PageScrollDirective from '@/plugins/PageScrollDirective'
 
 
 
@@ -31,16 +33,6 @@ forumApp.use(pinia)
 forumApp.config.globalProperties.forumStore = useForumStore();
 forumApp.use(router)
 forumApp.use(FontAwesome)
+forumApp.use(ClickOutsideDirective)
+forumApp.use(PageScrollDirective)
 forumApp.mount('#app')
-
-
-    // Use the On Auth State Changed Observer
-    firebase.auth().onAuthStateChanged( user => {
-      const forumStore = useForumStore(pinia);
-      
-      forumStore.unsubscribeAuthUserSnapshot();
-      
-      if(user){
-        forumStore.fetchAuthUser();
-      }
-    })

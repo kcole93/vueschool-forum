@@ -1,11 +1,14 @@
 <template>
-  <header class="header" id="header">
+  <header class="header" id="header"
+        v-click-outside="() => mobileNavMenu = false"
+        v-page-scroll="() => mobileNavMenu = false"
+    >
 
         <router-link :to="{name: 'Home'}" class="logo">
             <img src="../assets/svg/vueschool-logo.svg" >
         </router-link>
 
-        <div class="btn-hamburger">
+        <div class="btn-hamburger" @click="mobileNavMenu = !mobileNavMenu">
             <!-- use .btn-humburger-active to open the menu -->
             <div class="top bar"></div>
             <div class="middle bar"></div>
@@ -13,14 +16,16 @@
         </div>
 
     <!-- use .navbar-open to open nav -->
-    <nav class="navbar">
+    <nav class="navbar" :class="{'navbar-open': mobileNavMenu}">
         <ul>
 
-            <li v-if="this.forumStore.authUser" class="navbar-user">
-                <a @click.prevent="userDropdownOpen = !userDropdownOpen">
-                    <img class="avatar-small" :src="this.forumStore.authUser.avatar" :alt="`${this.forumStore.authUser.name}'s profile picture`">
+            <li v-if="authUser" class="navbar-user">
+                <a @click.prevent="userDropdownOpen = !userDropdownOpen"
+                    v-click-outside="()=> userDropdownOpen = false"    
+                >
+                    <img class="avatar-small" :src="authUser.avatar" :alt="`${authUser.name}'s profile picture`">
                     <span>
-                        {{ this.forumStore.authUser.name }}
+                        {{ authUser.name }}
                         <img class="icon-profile" src="../assets/svg/arrow-profile.svg" alt="">
                     </span>
                 </a>
@@ -30,16 +35,18 @@
                 <div id="user-dropdown" :class="{'active-drop': userDropdownOpen}">
                     <div class="triangle-drop"></div>
                     <ul class="dropdown-menu">
-                        <li class="dropdown-menu-item"><router-link :to="{'name': 'ProfileShow'}">View profile</router-link></li>
-                        <li class="dropdown-menu-item"><a @click.prevent="this.forumStore.signOut()" href="#">Log out</a></li>
+                        <li class="dropdown-menu-item"><router-link :to="{name: 'ProfileShow'}">View profile</router-link></li>
+                        <li class="dropdown-menu-item"><a @click.prevent="this.forumStore.signOut(), mobileNavMenu = false" href="#">Log out</a></li>
                     </ul>
                 </div>
             </li>
-            <li v-if="!this.forumStore.authUser" class="navbar-item"><router-link :to="{name: 'SignIn'}">Sign In</router-link></li>
-            <li v-if="!this.forumStore.authUser" class="navbar-item"><router-link :to="{name: 'Register'}">Register</router-link></li>
+            <li v-if="!authUser" class="navbar-item"><router-link :to="{name: 'SignIn'}">Sign In</router-link></li>
+            <li v-if="!authUser" class="navbar-item"><router-link :to="{name: 'Register'}">Register</router-link></li>
+            <li v-if="authUser" class="navbar-mobile-item"><router-link :to="{name: 'ProfileShow'}">View Profile</router-link></li>
+            <li v-if="authUser" class="navbar-mobile-item"><a @click.prevent="this.forumStore.signOut(), mobileNavMenu = false">Sign Out</a></li>
         </ul>
 
-        <ul>
+        <!-- <ul>
             <li class="navbar-item">
                 <router-link :to="{name: 'Home'}">Home</router-link>
             </li>
@@ -51,15 +58,15 @@
             </li>
             <li class="navbar-item">
                 <a href="thread.html">Thread</a>
-            </li>
+            </li> -->
             <!-- Show these option only on mobile-->
-            <li class="navbar-item mobile-only">
+            <!-- <li class="navbar-item mobile-only">
                 <a href="profile.html">My Profile</a>
             </li>
             <li class="navbar-item mobile-only">
                 <a href="#">Logout</a>
             </li>
-        </ul>
+        </ul> -->
     </nav>
   </header>
 </template>
@@ -68,9 +75,20 @@
 export default {
     data () {
         return {
-            userDropdownOpen: false
+            userDropdownOpen: false,
+            mobileNavMenu: false
         }
-    }
+    },
+    computed: {
+        authUser () {
+            return this.forumStore.authUser;
+        },        
+    },
+    created(){
+        this.$router.beforeEach((to, from) => {
+            this.mobileNavMenu = false;
+        })
+    },
 }
 </script>
 
