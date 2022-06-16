@@ -8,6 +8,7 @@ import firebaseConfig from '@/config/firebase'
 import FontAwesome from '@/plugins/FontAwesome'
 import ClickOutsideDirective from '@/plugins/ClickOutsideDirective'
 import PageScrollDirective from '@/plugins/PageScrollDirective'
+import VPagination from '@/plugins/Vue3Pagination';
 
 
 
@@ -35,4 +36,5 @@ forumApp.use(router)
 forumApp.use(FontAwesome)
 forumApp.use(ClickOutsideDirective)
 forumApp.use(PageScrollDirective)
+forumApp.use(VPagination)
 forumApp.mount('#app')

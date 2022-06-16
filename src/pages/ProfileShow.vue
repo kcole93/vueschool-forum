@@ -12,6 +12,10 @@
         </div>
         <hr />
         <PostList :posts="user.postsSorted" />
+        <AppInfiniteScrollVue
+          @load="fetchUserPosts"
+          :done="user.posts.length === user.postsCount"
+        />
       </div>
     </div>
   </div>
@@ -22,9 +26,10 @@ import PostList from '@/components/PostList';
 import UserProfileCard from '@/components/UserProfileCard.vue'
 import UserProfileCardEditor from '@/components/UserProfileCardEditor.vue'
 import asyncDataStatus from '@/mixins/asyncDataStatus';
+import AppInfiniteScrollVue from '@/components/AppInfiniteScroll.vue';
 
 export default {
-    components: { PostList, UserProfileCard, UserProfileCardEditor, },
+    components: { PostList, UserProfileCard, UserProfileCardEditor, AppInfiniteScrollVue },
     mixins: [asyncDataStatus],
     props: {
         edit: {
@@ -35,10 +40,19 @@ export default {
     computed: {
         user () {
             return this.forumStore.authUser;
-        },        
+        },
+        lastPostFetched(){
+          if(this.user.posts.length === 0)return null
+          return this.user.posts[this.user.posts.length - 1]
+        },       
+    },
+    methods: {
+      fetchUserPosts(){
+        return this.forumStore.fetchAuthUsersPosts({ startAfter: this.lastPostFetched })
+      }
     },
     async created () {
-      await this.forumStore.fetchAuthUsersPosts();
+      await this.fetchUserPosts();
       this.asyncDataStatus_fetched();
     }
 };
