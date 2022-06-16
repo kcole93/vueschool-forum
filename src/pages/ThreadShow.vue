@@ -78,7 +78,7 @@ export default {
     },
   },
   async created() {
-    const thread = await this.forumStore.fetchThread(this.id)
+    const thread = await this.forumStore.fetchThread({ id: this.id })
     const posts = await this.forumStore.fetchPosts({ ids: thread.posts })
     const users = posts.map(post => post.userId).concat(thread.userId)
     await this.forumStore.fetchUsers({ ids: users })

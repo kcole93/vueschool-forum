@@ -57,7 +57,7 @@ const routes = [{
         async beforeEnter(to, from, next) {
             // check if thread exists
             const forumStore = useForumStore();
-            await forumStore.fetchThread(to.params.id);
+            await forumStore.fetchThread({ id: to.params.id, once: true });
             const threadExists = findById(forumStore.forumData.threads, to.params.id)
             // if exists continue, otherwise redirect to NotFound
             if (threadExists) {
