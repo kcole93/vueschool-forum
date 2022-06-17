@@ -3,6 +3,7 @@
   <div class="container">
     <router-view v-show="showPage" @ready="showPage = true" :key="$route.fullPath"/>
     <AppSpinner v-if="!showPage"/>
+    <AppNotifications/>
   </div>
   
 </template>
@@ -11,11 +12,13 @@
 import { mapState } from 'pinia';
 import useForumStore from '@/stores/forumStore';
 import theNavbar from '@/components/TheNavbar';
+import AppNotifications from '@/components/AppNotifications.vue';
 
 export default {
   name: 'App',
   components: {
     theNavbar,
+    AppNotifications,
   },
   data () {
     return {
