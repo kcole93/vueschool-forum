@@ -39,7 +39,7 @@ export default {
     },
     computed: {
         user () {
-            return this.forumStore.authUser;
+            return this.authStore.authUser;
         },
         lastPostFetched(){
           if(this.user.posts.length === 0)return null
@@ -48,7 +48,7 @@ export default {
     },
     methods: {
       fetchUserPosts(){
-        return this.forumStore.fetchAuthUsersPosts({ startAfter: this.lastPostFetched })
+        return this.authStore.fetchAuthUsersPosts({ startAfter: this.lastPostFetched })
       }
     },
     async created () {

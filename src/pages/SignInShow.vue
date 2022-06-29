@@ -56,7 +56,7 @@ export default {
   methods: {
     async signIn() {
       try {
-        await this.forumStore.signInWithEmailAndPassword({...this.form});
+        await this.authStore.signInWithEmailAndPassword({...this.form});
         this.successRedirect();
       } catch (error) {
         alert(error.message);
@@ -64,7 +64,7 @@ export default {
     },
 
     async signInWithGoogle(){
-      await this.forumStore.signInWithGoogle();
+      await this.authStore.signInWithGoogle();
       this.successRedirect();
     },
     successRedirect(){

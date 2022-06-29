@@ -15,9 +15,8 @@ import SignInShow from '@/pages/SignInShow'
 import {
     findById
 } from '@/helpers'
-import {
-    useForumStore
-} from '@/stores/forumStore'
+import { useAuthStore } from '@/stores/authStore'
+import { useThreadsStore } from '@/stores/threadsStore'
 
 
 const routes = [{
@@ -56,9 +55,9 @@ const routes = [{
         props: true,
         async beforeEnter(to, from, next) {
             // check if thread exists
-            const forumStore = useForumStore();
-            await forumStore.fetchThread({ id: to.params.id, once: true });
-            const threadExists = findById(forumStore.forumData.threads, to.params.id)
+            const threadsStore = useThreadsStore();
+            await threadsStore.fetchThread({ id: to.params.id, once: true });
+            const threadExists = findById(threadsStore.items, to.params.id)
             // if exists continue, otherwise redirect to NotFound
             if (threadExists) {
                 return next()
@@ -124,8 +123,8 @@ const routes = [{
         path: '/logout',
         name: 'SignOut',
         beforeEnter() {
-            const forumStore = useForumStore();
-            forumStore.signOut();
+            const authStore = useAuthStore();
+            authStore.signOut();
             return {
                 name: 'Home'
             }
@@ -150,20 +149,20 @@ const router = createRouter({
 })
 
 router.beforeEach(async (to, from) => {
-    const forumStore = useForumStore();
-    await forumStore.initAuthentication()
+    const authStore = useAuthStore();
+    await authStore.initAuthentication()
     console.log(`🚦 Exiting ${from.name}, Entering ${to.name}!`)
 
 
-    forumStore.unsubscribeAllSnapshots();
+   authStore.unsubscribeAllSnapshots();
 
-    if (to.meta.requiresAuth && !forumStore.authId) {
+    if (to.meta.requiresAuth && !authStore.authId) {
         return {
             name: 'SignIn', query: { redirectTo: to.path }
         }
     }
 
-    if (to.meta.requiresGuest && forumStore.authId) {
+    if (to.meta.requiresGuest && authStore.authId) {
         return {
             name: 'Home'
         }

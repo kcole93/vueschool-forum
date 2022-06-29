@@ -48,13 +48,13 @@ export default {
   },
   computed: {
     forum() {
-      return findById(this.forumStore.forumData.forums, this.id);
+      return findById(this.forumsStore.items, this.id);
     },
     threads() {
       if (!this.forum) return []
-      return this.forumStore.forumData.threads
+      return this.threadsStore.items
       .filter(thread => thread.forumId === this.forum.id)
-      .map(thread => this.forumStore.thread(thread.id));
+      .map(thread => this.threadsStore.items(thread.id));
     },
     threadCount(){
       return this.forum.threads.length;
@@ -66,9 +66,9 @@ export default {
     },
   },
   async created (){
-    const forum = await this.forumStore.fetchForum(this.id)
-    const threads = await this.forumStore.fetchThreadsByPage({ ids: forum.threads, page: this.page, perPage: this.perPage })
-    await this.forumStore.fetchUsers({ ids: threads.map(thread => thread.userId) })
+    const forum = await this.forumsStore.fetchForum(this.id)
+    const threads = await this.forumsStore.fetchThreadsByPage({ ids: forum.threads, page: this.page, perPage: this.perPage })
+    await this.usersStore.fetchUsers({ ids: threads.map(thread => thread.userId) })
     this.asyncDataStatus_fetched();
   },
   watch: {

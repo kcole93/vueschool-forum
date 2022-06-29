@@ -29,12 +29,12 @@ export default {
     },
     computed: {
         forum() {
-            return findById(this.forumStore.forumData.forums, this.forumId) || {}
+            return findById(this.forumsStore.items, this.forumId) || {}
         }
     },
     methods: {
         async save ({ title, text}) {
-           const thread = await this.forumStore.createThread({
+           const thread = await this.threadsStore.createThread({
                 forumId: this.forumId,
                 title,
                 text
@@ -46,7 +46,7 @@ export default {
     }
 },
 async beforeCreate () {
- await this.forumStore.fetchForum(this.forumId);
+ await this.forumsStore.fetchForum(this.forumId);
  this.asyncDataStatus_fetched();
 },
 beforeRouteLeave(){

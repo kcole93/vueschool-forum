@@ -59,10 +59,10 @@ export default {
   },
   computed: {
     posts (){
-      return this.forumStore.forumData.posts;
+      return this.postsStore.items;
     },
     users () {
-      return this.forumStore.forumData.users;
+      return this.usersStore.items;
     },
   },
   methods: {

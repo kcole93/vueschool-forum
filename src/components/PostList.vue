@@ -33,7 +33,7 @@
           <p v-else>{{ post.text }}</p>
         </div>
         <a
-          v-if="post.userId === forumStore.authId"
+          v-if="post.userId === authId"
           @click.prevent="toggleEditMode(post.id)"
           href="#"
           style="margin-left: auto; padding-left: 10px"
@@ -72,16 +72,21 @@ export default {
   },
   methods: {
     userById(userId) {
-      return this.forumStore.user(userId);
+      return this.usersStore.user(userId);
     },
     toggleEditMode(id) {
       this.editing = id === this.editing ? null : id
     },
     handleUpdate(event) {
-      this.forumStore.updatePost(event.post.text, event.post.id)
+      this.postsStore.updatePost(event.post.text, event.post.id)
       this.editing = null
 
     }
+  },
+  computed: {
+    authUser() {
+      return this.authStore.authUser;
+    },
   },
   created () {
     this.$emit('ready')

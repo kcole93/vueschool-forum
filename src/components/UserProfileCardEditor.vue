@@ -97,7 +97,7 @@ export default {
   },
   methods: {
     save () {
-      this.forumStore.updateUser({...this.activeUser});
+      this.usersStore.updateUser({...this.activeUser});
       this.$router.push({name: 'ProfileShow'});
     },
     cancel() {

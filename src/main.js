@@ -2,7 +2,6 @@ import { createApp } from 'vue'
 import App from './App.vue'
 import router from '@/router'
 import { createPinia } from 'pinia'
-import { useForumStore } from '@/stores/forumStore'
 import firebase from 'firebase'
 import firebaseConfig from '@/config/firebase'
 import FontAwesome from '@/plugins/FontAwesome'
@@ -31,7 +30,6 @@ requireComponent.keys().forEach(function (fileName) {
 })
 
 forumApp.use(pinia)
-forumApp.config.globalProperties.forumStore = useForumStore();
 forumApp.use(router)
 forumApp.use(FontAwesome)
 forumApp.use(ClickOutsideDirective)

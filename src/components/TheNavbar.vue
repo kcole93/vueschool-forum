@@ -36,14 +36,14 @@
                     <div class="triangle-drop"></div>
                     <ul class="dropdown-menu">
                         <li class="dropdown-menu-item"><router-link :to="{name: 'ProfileShow'}">View profile</router-link></li>
-                        <li class="dropdown-menu-item"><a @click.prevent="this.forumStore.signOut(), mobileNavMenu = false" href="#">Log out</a></li>
+                        <li class="dropdown-menu-item"><a @click.prevent="this.authStore.signOut(), mobileNavMenu = false" href="#">Log out</a></li>
                     </ul>
                 </div>
             </li>
             <li v-if="!authUser" class="navbar-item"><router-link :to="{name: 'SignIn'}">Sign In</router-link></li>
             <li v-if="!authUser" class="navbar-item"><router-link :to="{name: 'Register'}">Register</router-link></li>
             <li v-if="authUser" class="navbar-mobile-item"><router-link :to="{name: 'ProfileShow'}">View Profile</router-link></li>
-            <li v-if="authUser" class="navbar-mobile-item"><a @click.prevent="this.forumStore.signOut(), mobileNavMenu = false">Sign Out</a></li>
+            <li v-if="authUser" class="navbar-mobile-item"><a @click.prevent="this.authStore.signOut(), mobileNavMenu = false">Sign Out</a></li>
         </ul>
 
         <!-- <ul>
@@ -81,7 +81,7 @@ export default {
     },
     computed: {
         authUser () {
-            return this.forumStore.authUser;
+            return this.authStore.authUser;
         },        
     },
     created(){

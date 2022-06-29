@@ -21,7 +21,7 @@ export default {
   },
   computed: {
     forums () {
-      return this.forumStore.forumData.forums;
+      return this.forumsStore.items;
     },
   },
   methods: {

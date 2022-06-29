@@ -19,11 +19,11 @@ export default {
   mixins: [asyncDataStatus],
   computed: {
     categories () {
-      return this.forumStore.forumData.categories
+      return this.categoriesStore.items
     },
   },
   async beforeCreate() {
-    const categories = await this.forumStore.fetchAllCategories();
+    const categories = await this.categoriesStore.fetchAllCategories();
     const forumIds = categories.map(category => category.forums).flat()
     await this.forumStore.fetchForums({ids: forumIds});
     this.asyncDataStatus_fetched();

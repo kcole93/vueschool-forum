@@ -29,17 +29,17 @@ export default {
   
   computed: {
       category() {
-          return findById(this.forumStore.forumData.categories, this.id) || {}
+          return findById(this.categoriesStore.items, this.id) || {}
       }
   },
   methods: {
       getCategoryForums(category) {
-          return this.forumStore.forumData.forums.filter(forum => forum.categoryId === category.id)
+          return this.forumsStore.items.filter(forum => forum.categoryId === category.id)
       }
   },
   async created () {
-    const category = await this.forumStore.fetchCategory(this.id)
-    const forums = await this.forumStore.fetchForums({ ids: category.forums })
+    const category = await this.categoriesStore.fetchCategory(this.id)
+    const forums = await this.forumsStore.fetchForums({ ids: category.forums })
     this.asyncDataStatus_fetched();
   },
 };

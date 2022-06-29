@@ -58,11 +58,11 @@ export default {
     },
     methods: {
         async register(){
-          this.forumStore.registerUserWithEmailAndPassword(this.form)
+          this.authStore.registerUserWithEmailAndPassword(this.form)
           this.$router.push('/')
         },
         async registerWithGoogle(){
-          await this.forumStore.signInWithGoogle()
+          await this.authStore.signInWithGoogle()
           this.$router.push('/')
         }
     },

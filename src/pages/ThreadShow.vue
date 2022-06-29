@@ -1,7 +1,5 @@
 <template>
-  <div 
-    v-if="asyncDataStatus_ready"
-    class="col-large push-top">
+  <div v-if="asyncDataStatus_ready" class="col-large push-top">
     <h1>
       {{ thread.title }}
       <router-link
@@ -27,7 +25,15 @@
     <post-list :posts="threadPosts" />
     <post-editor v-if="authUser" @save="addPost" />
     <div v-else class="sign-in-prompt text-center">
-      <router-link :to="{name: 'SignIn', query: {redirectTo: $route.path}}">Sign In</router-link> or <router-link :to="{ name: 'Register', query: {redirectTo: $route.path}}">Register</router-link>  to reply.
+      <router-link :to="{ name: 'SignIn', query: { redirectTo: $route.path } }"
+        >Sign In</router-link
+      >
+      or
+      <router-link
+        :to="{ name: 'Register', query: { redirectTo: $route.path } }"
+        >Register</router-link
+      >
+      to reply.
     </div>
   </div>
 </template>
@@ -36,13 +42,19 @@
 import PostList from "@/components/PostList";
 import PostEditor from "@/components/PostEditor.vue";
 import AppDate from "@/components/AppDate.vue";
-import asyncDataStatus from '@/mixins/asyncDataStatus'; 
+import asyncDataStatus from "@/mixins/asyncDataStatus";
+import useNotifications from "@/composables/useNotifications";
+import difference from "lodash/difference";
 
 export default {
   components: {
     PostList,
     PostEditor,
     AppDate,
+  },
+  setup() {
+    const { addNotification } = useNotifications();
+    return { addNotification };
   },
   mixins: [asyncDataStatus],
   props: {
@@ -52,17 +64,17 @@ export default {
     },
   },
   computed: {
-    authUser(){
-      return this.forumStore.authUser;
+    authUser() {
+      return this.authStore.authUser;
     },
     threads() {
-      return this.forumStore.forumData.threads;
+      return this.threadsStore.items;
     },
     posts() {
-      return this.forumStore.forumData.posts;
+      return this.postsStore.items;
     },
     thread() {
-      return this.forumStore.thread(this.id);
+      return this.threadsStore.thread(this.id);
     },
     threadPosts() {
       return this.posts.filter((post) => post.threadId === this.id);
@@ -74,17 +86,28 @@ export default {
         ...eventData.post,
         threadId: this.id,
       };
-      this.forumStore.createPost(post);
+      this.postsStore.createPost(post);
     },
+    async fetchPostsWithUsers(ids){
+      const posts = await this.postsStore.fetchPosts({ ids: ids });
+      const users = posts.map((post) => post.userId).concat(this.thread.userId);
+      await this.usersStore.fetchUsers({ ids: users });
+    }
   },
   async created() {
-    const thread = await this.forumStore.fetchThread({ id: this.id })
-    const posts = await this.forumStore.fetchPosts({ ids: thread.posts })
-    const users = posts.map(post => post.userId).concat(thread.userId)
-    await this.forumStore.fetchUsers({ ids: users })
+    const thread = await this.threadsStore.fetchThread({
+      id: this.id,
+      onSnapshot: async ({ isLocal, item, previousItem }) => {
+        if (isLocal || !this.asyncDataStatus_ready) return
+        const newPosts = difference(item.posts, previousItem.posts)
+        await this.fetchPostsWithUsers(newPosts);
+        this.addNotification({ message: 'Thread recently updated' });
+      },
+    });
+    await this.fetchPostsWithUsers(thread.posts);
     this.asyncDataStatus_fetched();
-  }
-}
+  },
+};
 </script>
 
 <style scoped>

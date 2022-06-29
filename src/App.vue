@@ -9,8 +9,14 @@
 </template>
 
 <script>
-import { mapState } from 'pinia';
-import useForumStore from '@/stores/forumStore';
+import { mapStores } from 'pinia';
+import useAuthStore from '@/stores/authStore';
+import useRootStore from '@/stores/rootStore';
+import { usePostsStore } from '@/stores/postsStore';
+import { useThreadsStore } from './stores/threadsStore';
+import { useUsersStore } from './stores/usersStore';
+import { useForumsStore } from './stores/forumsStore';
+import { useCategoriesStore } from './stores/categoriesStore';
 import theNavbar from '@/components/TheNavbar';
 import AppNotifications from '@/components/AppNotifications.vue';
 
@@ -26,11 +32,11 @@ export default {
     }
   },
   computed: {
-    ...mapState(useForumStore, ['forumData']),
+    ...mapStores(useRootStore,useAuthStore, usePostsStore, useThreadsStore, useUsersStore, useForumsStore, useCategoriesStore)
   },
   created () {    
     
-    this.forumStore.fetchAuthUser();    
+    this.authStore.fetchAuthUser();    
     
     // Reset showPage to false before each router navigation
     this.$router.beforeEach(() => {

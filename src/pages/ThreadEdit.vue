@@ -29,16 +29,16 @@ export default {
     },
     computed: {
         thread() {
-            return findById(this.forumStore.forumData.threads, this.id)
+            return findById(this.threadsStore.items, this.id)
         },
         text() {
-            const post = findById(this.forumStore.forumData.posts, this.thread.posts[0])
+            const post = findById(this.postsStore.items, this.thread.posts[0])
             return post? post.text : ''
         },
     },
     methods: {
         async save ({ title, text}) {
-           const thread = await this.forumStore.updateThread({
+           const thread = await this.threadsStore.updateThread({
                 id: this.id,
                 title,
                 text
@@ -50,8 +50,8 @@ export default {
     }
 },
 async created () {
-  const thread = await this.forumStore.fetchThread(this.id);
-  this.forumStore.fetchPost(thread.posts[0])
+  const thread = await this.threadsStore.fetchThread(this.id);
+  this.postsStore.fetchPost(thread.posts[0])
   this.asyncDataStatus_fetched();
 },
 beforeRouteLeave(){
